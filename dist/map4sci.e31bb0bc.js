@@ -71296,7 +71296,7 @@ var nodeStyleFunction = function nodeStyleFunction(feature, resolution) {
     })
   });
   global.nodestyle = nodestyle;
-  if (resolution < 1.7) nodestyle.setText(createTextStyle(feature.get("label"), 20, resolution));
+  if (resolution < 1.7) nodestyle.setText(createTextStyle(feature.get("label"), 14, resolution));
   if (resolution > 30) return new _style.Style({});
   return nodestyle;
 };
@@ -71478,9 +71478,9 @@ var checkedAssets, assetsToAccept;
 var parent = module.bundle.parent;
 
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
-  var hostname = "" || location.hostname;
+  var hostname = "localhost" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59801" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60528" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

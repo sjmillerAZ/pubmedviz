@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "parcel index.html  -p 8087 --host uamap-dev.arl.arizona.edu ",
+    "start": "parcel index.html  -p 8087 --host localhost ",
     "build": "parcel build --public-url . index.html"
   },
   "author": "Iqbal Hossain",

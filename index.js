@@ -62,7 +62,7 @@ var nodeStyleFunction = function(feature, resolution) {
       });
     global.nodestyle=nodestyle
 if (resolution < 1.7)
-nodestyle.setText(createTextStyle(feature.get("label"), 20 ,resolution))
+nodestyle.setText(createTextStyle(feature.get("label"), 14 ,resolution))
 
 if (resolution> 30) return new Style({});
   return nodestyle;
