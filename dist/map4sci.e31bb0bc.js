@@ -71252,6 +71252,28 @@ var clusterStyleFunction = function clusterStyleFunction(feature, resolution) {
       color: feature.get("fill")
     })
   });
+
+  if (resolution > 50) {
+    var nodetext = new _Text.default({
+      font: 30 + 'px arial',
+      text: "cluster name",
+      //"xx"+feature.get("lable"),
+      fill: new _style.Fill({
+        color: 'rgba(0,0,0,0.5)'
+      }),
+      stroke: new _style.Stroke({
+        color: 'rgba(0,0,0,0.5)',
+        width: 1
+      }),
+      offsetX: 0,
+      offsetY: 0 //boxheight/2,
+
+    });
+    clusterStyle.setText(nodetext);
+    global.clusterStyle = clusterStyle;
+  }
+
+  if (!getClusterVisible(resolution, feature.get("area"))) return new _style.Style({});
   return clusterStyle;
 };
 
@@ -71265,6 +71287,7 @@ var clusterBoundaryStyleFunction = function clusterBoundaryStyleFunction(feature
       color: feature.get("fill")
     })
   });
+  if (!getClusterVisible(resolution, feature.get("area"))) return new _style.Style({});
   return clusterStyle;
 };
 
@@ -71315,6 +71338,15 @@ var selectStyleFunctionForNode = function selectStyleFunctionForNode(feature, re
   }));
   return style;
 };
+
+function getClusterVisible(resolution, area) {
+  area = area / 1000;
+  var visiable = true;
+  if (resolution > 30 && area < 2000) visiable = false;
+  if (resolution > 100 && area < 10000) visiable = false;
+  if (resolution > 150 && area < 50000) visiable = false;
+  return visiable;
+}
 
 function getVisible(l, resolution) {
   var visiable = false;
@@ -71423,11 +71455,12 @@ map.on('click', function (evt) {
     var element = popup.getElement();
     var geometry = feature.getGeometry();
     var fid = feature.getId();
-    var ftype = feature.getGeometry().getType();
-    if (fid && fid.search("cluster") > -1) return 0;
+    var ftype = feature.getGeometry().getType(); //if ( fid &&  fid.search("cluster")>-1 ) return 0;
+
     $(element)[0].title = feature.get('label');
     var pmid = feature.get('label');
     var content;
+    content = feature.get('label');
 
     if (fid && fid.search("node") > -1) {
       content = '<a target="_blank" href="https://www.ncbi.nlm.nih.gov/pubmed/' + pmid + '/">' + pmid + "</a>  ";
@@ -71480,7 +71513,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "localhost" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60528" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55053" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

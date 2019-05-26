@@ -30,12 +30,34 @@ var clusterStyleFunction = function(feature, resolution) {
     stroke: new Stroke({  color:  feature.get("stroke"),  width: 1  }),
     fill: new Fill({ color: feature.get("fill")      })
   });
+if (resolution>50){
+  var nodetext=
+     new Text({  font:  30 + 'px arial',  text: "cluster name", //"xx"+feature.get("lable"),
+      fill: new Fill({      color: 'rgba(0,0,0,0.5)'    }),
+      stroke: new Stroke({  color: 'rgba(0,0,0,0.5)', width: 1  }),
+      offsetX: 0,
+      offsetY: 0,//boxheight/2,
+    });
+
+
+  clusterStyle.setText(nodetext);
+  global.clusterStyle=clusterStyle
+}
+
+   if ( ! getClusterVisible(resolution,feature.get("area")))
+    return new Style({});
+
+
   return clusterStyle; };
 
 var clusterBoundaryStyleFunction = function(feature, resolution) {
   var clusterStyle = new Style({  stroke: new Stroke({  color: feature.get("stroke"),  width: 1    }),
     fill: new Fill({  color: feature.get("fill")  })
   });
+  if ( ! getClusterVisible(resolution,feature.get("area")))
+   return new Style({});
+
+
   return clusterStyle; };
 
 var edgeStyleFunction = function(feature, resolution) {
@@ -83,6 +105,17 @@ var selectStyleFunctionForNode=function(feature, resolution) {
 };
 
 
+function getClusterVisible(resolution,area)
+{area=area/1000
+
+  var visiable=true
+  if ( resolution> 30 && area<2000 )  visiable= false;
+  if ( resolution> 100 && area<10000 )  visiable= false;
+  if ( resolution> 150 && area<50000 )  visiable= false;
+
+  return visiable
+}
+
 
 function getVisible(l,resolution)
 {
@@ -95,6 +128,8 @@ function getVisible(l,resolution)
   if (l == 6 && resolution< 6)  visiable= true;
   if (l == 7 && resolution< 5)  visiable= true;
   if (l == 8 && resolution< 4)  visiable= true;
+
+
   return visiable
 }
 
@@ -176,11 +211,13 @@ map.on('click', function(evt) {
         var geometry = feature.getGeometry();
         var fid=feature.getId()
         var ftype = feature.getGeometry().getType()
-        if ( fid &&  fid.search("cluster")>-1 ) return 0;
+        //if ( fid &&  fid.search("cluster")>-1 ) return 0;
 
         $(element)[0].title =feature.get('label')
         var pmid=  feature.get('label')
-         var content
+         var content;
+         content=feature.get('label');
+
           if ( fid &&  fid.search("node")>-1 )  {
          content =  '<a target="_blank" href="https://www.ncbi.nlm.nih.gov/pubmed/'+pmid+'/">' + pmid  + "</a>  " ;
         }
