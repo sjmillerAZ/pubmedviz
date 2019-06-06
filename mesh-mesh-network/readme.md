@@ -1,5 +1,11 @@
-Data
+# This repository generates MeSH-MeSH network for PubMed paper-Mesh network.
+
+`Caution`: parallel computing environment is required for this repository. The code was tested in `High Performance Computing System (HPC)` of the University of Arizona. This network data with `234M edges` was processed with `72 CPUs`.
+
+# Data
+```
 # more crest_full_set.12.05.2016.csv
+
 pmid,mesh_code
 6511629,D008297
 6511629,D007182
@@ -9,16 +15,18 @@ pmid,mesh_code
 ...
 ...
 ...
+```
 
+## computing MeSH node weight
+### 1. take mesh_code column and save as new file to
+```console
+$ cut -d, -f2 crest_full_set.12.05.2016.csv > cfset_f2.csv
+```
 
-Weight count of each MeSH node
-1. take mesh_code column and save as new file to 
-cut -d, -f2 crest_full_set.12.05.2016.csv > cfset_f2.csv 
-
-2. run  
-mpirun -n 10 python3 weight_counter.py it produces output file aggcfset_f2.csv
-
-#more aggcfset_f2.csv 
+### 2. run python code in parallel computing envionment
+```console
+$ mpirun -n 72 python3 weight_counter.py it produces output file aggcfset_f2.csv
+$ more aggcfset_f2.csv
 
 m,weight
 D000001,11743
@@ -34,26 +42,21 @@ D000009,10432
 ...
 ...
 
+$ cp aggcfset_f2.csv  nodelist.csv
+```
+### 3. run mesh to mesh edge creator see the algorithm in draft paper
+```console
+$ mpirun -n 72 python3 edge_creator_un.py
+```
+output is saved as `edges.csv`
 
-3. cp aggcfset_f2.csv  nodelist.csv
+### 4. apply l-k threshold with k command line parameter
+```console
+$ python3 l-k-generator.py 5000
+```
+output saved as graph `dot` formate in `release` directory
 
-4. run mesh to mesh edge creator see the algorithm 
-mpirun -n 50 python3 edge_creator_un.py 
-give output edges.csv
-
-5. apply l-k threshold 
-python3 l-k-generator.py 5000 
-
-gives output as dot formate stored in release 
-
-
+### compute some statistics of the generated graphs
+```console
 6. run stat.py to get stastics of generated l-k meshnetwork
-
-
-
-
-
-
-
-
-
+```
