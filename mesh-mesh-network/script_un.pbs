@@ -1,0 +1,32 @@
+#!/bin/bash
+### script to run an mpi job using 12-core or less (using only one 12-core node)
+### Set the job name
+#PBS -N bigGraphPart1
+### Specify the PI group for this job
+#PBS -W group_list=kobourov
+### Request email when job begins and ends - commented out in this case
+### PBS -m bea
+### Specify email address to use for notification - commented out in this case
+### PBS -M hossain@email.arizona.edu
+### Set the queue for this job as windfall
+#PBS -q standard
+### Set the number of nodes, cores and memory that will be used for this job
+#PBS -l select=1:ncpus=12:mem=168gb:pcmem=6gb
+### Specify "wallclock time" required for this job, hhh:mm:ss
+#PBS -l walltime=10:00:0
+### Specify total cpu time required for this job, hhh:mm:ss
+### total cputime = walltime * ncpus
+#PBS -l cput=120:00:00
+### Load required modules/libraries if needed (openmpi example)
+### Use "module avail" command to list all available modules
+
+cd /extra/hossain/mesh/
+# run the program
+mpirun -n 10 python3 edge_creator_un.py 0 5000 > ncpus12_job1.txt
+#mpirun -n 10 python3 edge_creator_un.py 5000 10000 > ncpus12_job2.txt
+#mpirun -n 12 python3 edge_creator_un.py 10000 15000 > ncpus12_job3.txt
+#mpirun -n 12 python3 edge_creator_un.py 15000 20000 > ncpus12_job4.txt
+#mpirun -n 10 python3 edge_creator_un.py 20000 25000 > ncpus12_job5.txt
+#mpirun -n 12 python3 edge_creator_un.py 25000 30000 > ncpus12_job6.txt
+exit 0
+
