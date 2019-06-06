@@ -1,26 +1,7 @@
-# This repository generates maps for mediline abstracts. (data is not included)
-`Caution`: The code was tested in `High Performance Computing System (HPC)` of the University of Arizona using docker `https://hub.docker.com/r/hossain/gdocker`
+This repository process text abstracts, generates map, and gives a visual interactive system.
+The system can found here:  http://uamap-dev.arl.arizona.edu:8087/
+readme and instructions
 
-# Step1: take noun phrases and stemming abstracts
-```console
-$ python3 txtprocessor.py
-```
-## Step2: find tsne and umap embedding
-```console
-$ python3 tsne-umap-vis.py
-```
-## Step3: find k-nearest neighbor and export as graph `dot`
-```console
-$ python k-neighbor_and_make_dot.py
-```
-
-## Step4: apply clustering, give map look and get drawing as `svg`
-```console
-$eba/kmeans -action=clustering -C=geometrickmeans dot.dot > out1.dot
-$gvmap -e  -c 1 out1.dot > out2.dot
-$neato -Gforcelabels=false -Ecolor=grey -Gstart=123  -n2 -Tsvg  out2.dot > map.svg
-```
-## Step5: get ready meshname for selected abstracts for the visualization  
-```console
-$ run papermeshname.py
-```
+### 1. parallel processing of MeSH-MeSH network `/mesh-mesh-network/readme.md`
+### 2. PubMed abstracts to building map `/paper-paper-network/readme.md`
+### 3. openlayer nodejs visual interactive system `/`
