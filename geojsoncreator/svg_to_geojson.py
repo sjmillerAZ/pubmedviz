@@ -66,15 +66,18 @@ def FeatureCollection(features):
         "features": features
     }
 
+n2point = {}
+for n in G.nodes():
+    x1=float(G.node[n]["pos"].split(",")[0])
+    y1=float(G.node[n]["pos"].split(",")[1])
+    x1, y1 = MapPoint(x1, y1)
+    n2point[n] = Point(x1, y1)
 
 def getClusterName(points):
     meshcount={}
     nodesincluste=0
     for n in G.nodes():
-        x1=float(G.node[n]["pos"].split(",")[0])
-        y1=float(G.node[n]["pos"].split(",")[1])
-        x1, y1 = MapPoint(x1, y1)
-        point = Point(x1, y1)
+        point = n2point[n]
         polygon = Polygon(points)
         if polygon.contains(point):
             nodesincluste=nodesincluste+1
@@ -119,7 +122,7 @@ def process_polygon(xml,id):
     points_array = MapPoints(points_array)
     area=int(polygon_area(points_array))
     polygon["properties"]=xml.attrib
-    polygon["properties"]["label"]= str(area) # + getClusterName(points_array)
+    polygon["properties"]["label"]= str(area) + getClusterName(points_array)
     polygon["geometry"]["coordinates"]=[points_array]
     polygon["properties"]["area"]=area
 

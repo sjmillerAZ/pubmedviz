@@ -42,30 +42,48 @@ map.on('load', function () {
         "type": "fill",
         "source": { "type": "geojson", "data": clusterData },
         "layout": { },
-        "paint": { "fill-color": "blue", "fill-opacity": 0.1 },
+        "paint": {
+          "fill-color": ['get', 'fill'],
+          "fill-opacity": 0.7,
+          "fill-outline-color": ['get', 'stroke'],
+        },
     });
 
     map.addLayer({
         "id": "cluster_boundary",
         "type": "line",
+        "minzoom": 3,
         "source": { "type": "geojson", "data": clusterBoundaryData },
         "layout": { },
-        "paint": { "line-color": "yellow", "line-width": 1 },
+        "paint": {
+          "line-color": ['get', 'stroke'],
+          "line-width": 0.5,
+          "line-opacity": 0.8
+        },
     });
 
     map.addLayer({
         "id": "edges",
         "type": "line",
+        "minzoom": 4,
         "source": { "type": "geojson", "data": edgeData },
         "layout": { },
-        "paint": { "line-color": "green", "line-width": 1 },
+        "paint": { 
+          "line-color": ['get', 'stroke'],
+          "line-width": 1,
+          "line-opacity": 0.9
+        },
     });
 
     map.addLayer({
         "id": "nodes",
         "type": "circle",
+        "minzoom": 6,
         "source": { "type": "geojson", "data": nodeData },
         "layout": { },
-        "paint": { "circle-color": "black", "circle-radius": 5 },
+        "paint": {
+          "circle-color": "black",
+          "circle-radius": 2
+        },
     });
 });

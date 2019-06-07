@@ -3,4 +3,4 @@ numpy
 networkx
 pygraphviz
 pandas
-shapely
+shapely[vectorized]
