@@ -2,6 +2,8 @@
 T8*
 index-bk.js
 /.cache
+#paper-paper-network/eba/build
+__pycache__
 
 # Logs
 logs

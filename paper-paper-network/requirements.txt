@@ -1,0 +1,9 @@
+scipy
+numpy
+pandas
+nltk
+matplotlib
+sklearn
+keras
+tensorflow
+umap-learn
