@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 import numpy as np
-import json
+import json, math
 import networkx as nx
 import pygraphviz as pgv
 import pandas as pd
@@ -29,17 +29,32 @@ bounds = {
   "maxy": 98229.6641
 }
 
+# See https://github.com/Leaflet/Leaflet/blob/dc6a0ae61a70b1d34f9ee2c4f814bdd21841c774/src/geo/projection/Projection.SphericalMercator.js#L32
+earthRadius = 6378137
+d = 180 / math.pi;
+def unproject(x, y):
+    lon = x * d / earthRadius
+    lat = (2 * math.atan(math.exp(y / earthRadius)) - (math.pi / 2)) * d
+    return lon, lat
+
 dist = {"minx": 1000000, "miny": 1000000, "maxx": -1000000, "maxy": -1000000}
 def MapPoint(x, y):
+    """
+    Convert x,y into mercator-projected pixels, then unproject to Lon/Lat.
+    When the Lon/Lat is projected back into pixels it will then match back nicely
+    with what the original layout ratio was.
+    """
+
     dist["minx"] = min(dist["minx"], x)
     dist["miny"] = min(dist["miny"], y)
     dist["maxx"] = max(dist["maxx"], x)
     dist["maxy"] = max(dist["maxy"], y)
     
-    """Translate x/y into fake lon/lat values"""
-    lon = ((x - bounds['minx']) / (bounds['maxx'] - bounds['minx'])) * 120 - 60
-    lat = ((y - bounds['miny']) / (bounds['maxy'] - bounds['miny'])) * 120 - 60
-    return lon, lat
+    mercatorWidth = earthRadius * 2.5
+    mercatorX = ((x - bounds['minx']) / (bounds['maxx'] - bounds['minx'])) * mercatorWidth - mercatorWidth / 2
+    mercatorY = ((y - bounds['miny']) / (bounds['maxy'] - bounds['miny'])) * -mercatorWidth + mercatorWidth / 2
+
+    return unproject(mercatorX, mercatorY)
 
 def MapPoints(coords):
     return [ MapPoint(x,y) for x,y in coords ]
@@ -122,7 +137,7 @@ def process_polygon(xml,id):
     points_array = MapPoints(points_array)
     area=int(polygon_area(points_array))
     polygon["properties"]=xml.attrib
-    polygon["properties"]["label"]= str(area) + getClusterName(points_array)
+    polygon["properties"]["label"]= str(area) + " " + getClusterName(points_array)
     polygon["geometry"]["coordinates"]=[points_array]
     polygon["properties"]["area"]=area
 
