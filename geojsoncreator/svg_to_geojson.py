@@ -22,12 +22,16 @@ nodesoutput="../map/map-data/nodes.geojson"
 
 root = ET.parse(mappath).getroot()
 
-bounds = {
-  "minx": -102944.7969, 
-  "miny": -100931.5781, 
-  "maxx": 100477.6328, 
-  "maxy": 98229.6641
-}
+# Compute node bounds
+bounds = {"minx": 1000000, "miny": 1000000, "maxx": -1000000, "maxy": -1000000}
+for n in G.nodes():
+    x=float(G.node[n]["pos"].split(",")[0])
+    y=float(G.node[n]["pos"].split(",")[1])
+
+    bounds["minx"] = min(bounds["minx"], x)
+    bounds["miny"] = min(bounds["miny"], y)
+    bounds["maxx"] = max(bounds["maxx"], x)
+    bounds["maxy"] = max(bounds["maxy"], y)
 
 # See https://github.com/Leaflet/Leaflet/blob/dc6a0ae61a70b1d34f9ee2c4f814bdd21841c774/src/geo/projection/Projection.SphericalMercator.js#L32
 earthRadius = 6378137
@@ -37,7 +41,6 @@ def unproject(x, y):
     lat = (2 * math.atan(math.exp(y / earthRadius)) - (math.pi / 2)) * d
     return lon, lat
 
-dist = {"minx": 1000000, "miny": 1000000, "maxx": -1000000, "maxy": -1000000}
 def MapPoint(x, y):
     """
     Convert x,y into mercator-projected pixels, then unproject to Lon/Lat.
@@ -45,11 +48,6 @@ def MapPoint(x, y):
     with what the original layout ratio was.
     """
 
-    dist["minx"] = min(dist["minx"], x)
-    dist["miny"] = min(dist["miny"], y)
-    dist["maxx"] = max(dist["maxx"], x)
-    dist["maxy"] = max(dist["maxy"], y)
-    
     mercatorWidth = earthRadius * 2.5
     mercatorX = ((x - bounds['minx']) / (bounds['maxx'] - bounds['minx'])) * mercatorWidth - mercatorWidth / 2
     mercatorY = ((y - bounds['miny']) / (bounds['maxy'] - bounds['miny'])) * -mercatorWidth + mercatorWidth / 2
@@ -81,6 +79,7 @@ def FeatureCollection(features):
         "features": features
     }
 
+# Cache reprojected points
 n2point = {}
 for n in G.nodes():
     x1=float(G.node[n]["pos"].split(",")[0])
@@ -140,7 +139,6 @@ def process_polygon(xml,id):
     polygon["properties"]["label"]= str(area) + " " + getClusterName(points_array)
     polygon["geometry"]["coordinates"]=[points_array]
     polygon["properties"]["area"]=area
-
     return polygon
 
 
@@ -177,7 +175,6 @@ def process_edge(xml,G,c):
     edge["properties"]["weight"]=""
     edge["geometry"]["coordinates"]=points_array
     edge["properties"]["level"]="1"
-
     return edge
 
 
@@ -190,15 +187,7 @@ def process_node(xml,G):
     node["properties"]=G.node[node_g]
     x=float(xml[1].attrib.pop('x'))
     y=float(xml[1].attrib.pop('y'))
-    x,y = MapPoint(x, y)
-    #h= float(node["properties"]["height"]) * 1.10 * 72  # inch to pixel conversion
-    #w=float(node["properties"]["width"]) * 1.10 * 72 # inch to pixel conversion
-    #points_array=[[x-w/2,y-h/2], [x+w/2,y-h/2], [x+w/2,y+h/2], [x-w/2,y+h/2], [x-w/2,y-h/2]]
-
-    node["properties"]["height"]="h"
-    node["properties"]["width"]= "w"
-
-    node["geometry"]["coordinates"]= [x,y] #[points_array] #//
+    node["geometry"]["coordinates"]=MapPoint(x, y)
     return node
 
 
@@ -233,8 +222,7 @@ write_to_file(polylines,polylineoutput)
 write_to_file(edges,edgesoutput)
 write_to_file(nodes,nodesoutput)
 
-
-print(json.dumps(dist, indent=2))
+print(json.dumps(bounds, indent=2))
 
 '''
 <g id="node2830" class="node">
