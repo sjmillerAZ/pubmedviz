@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 import numpy as np
-import json, math
+import json, math, sys
 import networkx as nx
 import pygraphviz as pgv
 import pandas as pd
@@ -14,6 +14,7 @@ papermeshfile="papermeshname.csv"
 papermesh=pd.read_csv(papermeshfile)
 #papermesh=papermesh[papermesh["is_major_topic"]=='Y'].reset_index()
 G=nx.Graph(pgv.AGraph(input_graph))
+disable_projection = len(sys.argv) > 1 and sys.argv[1] == '--disable-projection'
 
 clusteroutput="../map/map-data/cluster.geojson"
 polylineoutput="../map/map-data/cluster_boundary.geojson"
@@ -53,6 +54,10 @@ def MapPoint(x, y):
     mercatorY = ((y - bounds['miny']) / (bounds['maxy'] - bounds['miny'])) * -mercatorWidth + mercatorWidth / 2
 
     return unproject(mercatorX, mercatorY)
+
+if disable_projection:
+    def MapPoint(x, y):
+        return x, y
 
 def MapPoints(coords):
     return [ MapPoint(x,y) for x,y in coords ]
