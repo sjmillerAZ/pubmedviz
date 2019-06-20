@@ -1,0 +1,2 @@
+-r geojsoncreator/requirements.txt
+-r paper-paper-network/requirements.txt

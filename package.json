@@ -1,13 +1,18 @@
 {
-
   "name": "map4sci",
   "version": "1.0.0",
   "description": "map app",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "parcel index.html  -p 8087 --host localhost ",
-    "build": "parcel build --public-url . index.html"
+    "clean": "rimraf dist .cache",
+    "deploy": "gh-pages -d dist",
+    "start:openlayers": "parcel map/openlayers-version/index.html -p 8087 --host localhost",
+    "build:openlayers": "parcel build --public-url . map/openlayers-version/index.html",
+    "deploy:openlayers": "npm-run-all clean build:openlayers deploy",
+    "start:mapbox": "parcel map/mapbox-version/index.html -p 8087 --host localhost",
+    "build:mapbox": "parcel build --public-url . map/mapbox-version/index.html",
+    "deploy:mapbox": "npm-run-all clean build:mapbox deploy"
   },
   "author": "Iqbal Hossain",
   "license": "ISC",
@@ -15,6 +20,10 @@
     "ol": "^5.3.2"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.3"
+    "@babel/core": "^7.4.5",
+    "gh-pages": "^2.0.1",
+    "npm-run-all": "^4.1.5",
+    "parcel-bundler": "^1.12.3",
+    "rimraf": "^2.6.3"
   }
 }
